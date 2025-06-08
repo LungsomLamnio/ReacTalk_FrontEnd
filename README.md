@@ -25,8 +25,6 @@ Welcome to the **frontend** of **ReacTalk**, a real-time chat application built 
 
 ---
 
----
-
 ## 📦 Getting Started
 
 ### 1. Clone the Repository
