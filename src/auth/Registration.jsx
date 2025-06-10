@@ -1,7 +1,7 @@
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
 import { useState } from "react";
 
-export default function Registeration() {
+export default function Registration() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,9 +15,40 @@ export default function Registeration() {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(formData);
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Password do not match");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:3000/user/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("registeration successfull");
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong. Please try again");
+    }
   };
   return (
     <Container className="mt-5">

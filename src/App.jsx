@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import Registeration from "./auth/Registeration";
+import Registration from "./auth/Registration";
 import Home from "./pages/Home";
 
 function App() {
@@ -7,7 +7,7 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="user-register" element={<Registeration />} />
+        <Route path="user-register" element={<Registration />} />
       </Routes>
     </>
   );
