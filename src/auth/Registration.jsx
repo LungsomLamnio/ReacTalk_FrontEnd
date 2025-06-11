@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export default function Registration() {
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -18,6 +18,16 @@ export default function Registration() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (
+      !formData.username ||
+      !formData.email ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
+      alert("All Fields are required!");
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       alert("Password do not match");
       return;
@@ -28,7 +38,7 @@ export default function Registration() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: formData.name,
+          username: formData.username,
           email: formData.email,
           password: formData.password,
         }),
@@ -39,11 +49,13 @@ export default function Registration() {
       if (response.ok) {
         alert("registeration successfull");
         setFormData({
-          name: "",
+          username: "",
           email: "",
           password: "",
           confirmPassword: "",
         });
+      } else {
+        alert(data.message || "Registration Failed");
       }
     } catch (err) {
       console.error(err);
@@ -57,14 +69,14 @@ export default function Registration() {
           <Card className="p-4 shadow-sm">
             <h3 className="text-center mb-4">User Registeration</h3>
             <Form onSubmit={handleSubmit}>
-              <Form.Group className="mb-3" controlId="formName">
-                <Form.Label>Full Name</Form.Label>
+              <Form.Group className="mb-3" controlId="formUsername">
+                <Form.Label>Username</Form.Label>
                 <Form.Control
                   type="text"
-                  name="name"
-                  placeholder="Enter your full name"
+                  name="username"
+                  placeholder="Enter your username"
                   onChange={handleChange}
-                  value={formData.name}
+                  value={formData.username}
                   required
                 />
               </Form.Group>
