@@ -1,11 +1,14 @@
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
+
+  const navigate = useNavigate();
 
   const handleFormData = (event) => {
     setFormData((prevData) => {
@@ -30,9 +33,14 @@ export default function Login() {
         body: JSON.stringify(formData),
       });
 
-      const data = response.json();
+      const data = await response.json();
       if (response.ok) {
         alert("Login Successful");
+
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        navigate("/");
       } else {
         alert(data.message || "Login Failed");
       }
