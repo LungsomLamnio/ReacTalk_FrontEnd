@@ -1,6 +1,6 @@
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -83,6 +83,9 @@ export default function Login() {
               <Button variant="primary" type="submit" className="w-100">
                 Login
               </Button>
+              <div className="text-center mt-3">
+                Don't have an account? <Link to="/user-register">Sign Up</Link>
+              </div>
             </Form>
           </Card>
         </Col>

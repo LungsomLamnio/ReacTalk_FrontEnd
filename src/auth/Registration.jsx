@@ -1,4 +1,5 @@
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 export default function Registration() {
@@ -8,6 +9,8 @@ export default function Registration() {
     password: "",
     confirmPassword: "",
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     setFormData((prevValue) => {
@@ -54,6 +57,8 @@ export default function Registration() {
           password: "",
           confirmPassword: "",
         });
+
+        navigate("/user-login");
       } else {
         alert(data.message || "Registration Failed");
       }
@@ -116,6 +121,9 @@ export default function Registration() {
               <Button variant="primary" type="submit" className="w-100">
                 Register
               </Button>
+              <div className="text-center mt-3">
+                Already have an account? <Link to="/user-login">Sign In</Link>
+              </div>
             </Form>
           </Card>
         </Col>
