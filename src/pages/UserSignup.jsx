@@ -1,8 +1,11 @@
 import { Container, Card, Button, Form, Alert } from "react-bootstrap";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function UserSignup() {
   const [error, setError] = useState("");
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -17,13 +20,28 @@ export default function UserSignup() {
     }));
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
     console.log(formData);
 
     if (formData.password !== formData.confirmPassword) {
       setError("Password do not match");
       return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/users/signup",
+        formData,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(response.data);
+      navigate("/user-login");
+    } catch (err) {
+      setError(err.response?.data?.message || "Signup Failed");
     }
   };
   return (
