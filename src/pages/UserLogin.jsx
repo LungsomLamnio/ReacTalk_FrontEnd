@@ -1,7 +1,11 @@
 import { Form, Card, Alert, Button, Container } from "react-bootstrap";
 import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function UserLogin() {
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -14,14 +18,26 @@ export default function UserLogin() {
     }));
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
-    console.log("Form Submitted Successfully");
-    console.log(formData);
-    setFormData({
-      email: "",
-      password: "",
-    });
+    setError("");
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/users/login",
+        formData,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      console.log("Login Successful: ", response.data);
+      navigate("/");
+    } catch (err) {
+      console.error(err.message);
+      setError(err.response?.data?.message || "Login Failed");
+    }
   };
   return (
     <Container
@@ -31,6 +47,7 @@ export default function UserLogin() {
       <Card style={{ width: "100%", maxWidth: "400px" }} className="p-4 shadow">
         <Form onSubmit={handleFormSubmit}>
           <h2 className="text-center mb-4">Login</h2>
+          {error && <Alert variant="danger">{error}</Alert>}
           <Form.Group className="mb-3" controlId="email">
             <Form.Label>Email Address</Form.Label>
             <Form.Control
