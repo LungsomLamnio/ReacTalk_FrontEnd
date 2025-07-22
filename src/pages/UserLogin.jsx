@@ -32,6 +32,8 @@ export default function UserLogin() {
         }
       );
 
+      localStorage.setItem("token", response.data.token);
+
       console.log("Login Successful: ", response.data);
       navigate("/");
     } catch (err) {
