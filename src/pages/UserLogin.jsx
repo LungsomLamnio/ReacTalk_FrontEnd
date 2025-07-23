@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function UserLogin() {
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -32,10 +33,15 @@ export default function UserLogin() {
         }
       );
 
-      localStorage.setItem("token", response.data.token);
+      const { token, user } = response.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
       console.log("Login Successful: ", response.data);
-      navigate("/");
+      setMessage(`Welcome, ${user.username}`);
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
     } catch (err) {
       console.error(err.message);
       setError(err.response?.data?.message || "Login Failed");
@@ -50,6 +56,7 @@ export default function UserLogin() {
         <Form onSubmit={handleFormSubmit}>
           <h2 className="text-center mb-4">Login</h2>
           {error && <Alert variant="danger">{error}</Alert>}
+          {message && <Alert variant="success">{message}</Alert>}
           <Form.Group className="mb-3" controlId="email">
             <Form.Label>Email Address</Form.Label>
             <Form.Control
