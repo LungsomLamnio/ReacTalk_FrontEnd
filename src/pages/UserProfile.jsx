@@ -1,7 +1,16 @@
-import { Container, Card, Alert, Spinner } from "react-bootstrap";
+import {
+  Container,
+  Card,
+  Alert,
+  Spinner,
+  Row,
+  Col,
+  Image,
+} from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import ProfilePicture from "../assets/pfp.jpg";
 
 export default function UserProfile() {
   const [error, setError] = useState("");
@@ -46,7 +55,7 @@ export default function UserProfile() {
       style={{ height: "100vh" }}
     >
       <Card style={{ width: "100%", maxWidth: "500px" }} className="p-4 shadow">
-        <h3>User Profile</h3>
+        <h3 className="text-center mb-4">User Profile</h3>
         {error && <Alert variant="danger">{error}</Alert>}
 
         {!profileData && !alert && (
@@ -54,20 +63,37 @@ export default function UserProfile() {
         )}
 
         {profileData && (
-          <div>
-            <p>
-              <strong>Username: </strong>
-              {profileData.username}
-            </p>
-            <p>
-              <strong>Email: </strong>
-              {profileData.email}
-            </p>
-            <p>
-              <strong>ID: </strong>
-              {profileData.id}
-            </p>
-          </div>
+          <Row>
+            {/* Profile Picture */}
+            <Col xs={12} md={4} className="text-center mb-md-0">
+              <Image
+                src={ProfilePicture}
+                alt="profile-picture"
+                roundedCircle
+                style={{ width: "150px", height: "150px", objectFit: "cover" }}
+              />
+            </Col>
+            {/* Profile Info */}
+            <Col xs={12} md={8}>
+              <h4>{profileData.username}</h4>
+              <p>
+                <strong>Email: </strong>
+                {profileData.email}
+              </p>
+              <p>
+                <strong>Bio: </strong>
+                {profileData.bio || "No Bio Yet"}
+              </p>
+              <p>
+                <strong>Followers: </strong>
+                {profileData.followers?.length || 0}
+              </p>
+              <p>
+                <strong>Followings: </strong>
+                {profileData.followings?.length || 0}
+              </p>
+            </Col>
+          </Row>
         )}
       </Card>
     </Container>
