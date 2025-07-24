@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import UserLogin from "./pages/UserLogin";
-import UserSignup from "./pages/UserSignUp";
+import UserSignup from "./pages/UserSignup";
 import ChatPage from "./pages/ChatPage";
 import UserProfile from "./pages/UserProfile";
 import SearchUsers from "./pages/SearchUsers";

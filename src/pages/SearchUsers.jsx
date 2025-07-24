@@ -5,6 +5,7 @@ import { Container, Form, Card, Alert, Spinner, Button } from "react-bootstrap";
 
 export default function SearchUsers() {
   const [username, setUsername] = useState("");
+  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchedUser, setSearchedUser] = useState(null);
@@ -53,6 +54,7 @@ export default function SearchUsers() {
         }
       );
       setBtnMssg("unfollow");
+      setMessage("User followed successfully");
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || "Failed to follow the user");
@@ -74,6 +76,7 @@ export default function SearchUsers() {
       </Form>
       {loading && <Spinner animation="border" />}
       {error && <Alert variant="danger">{error}</Alert>}
+      {message && <Alert variant="success">{message}</Alert>}
 
       {searchedUser && (
         <Card className="p-3 shadow-sm" style={{ cursor: "pointer" }}>

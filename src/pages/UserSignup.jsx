@@ -5,6 +5,7 @@ import axios from "axios";
 
 export default function UserSignup() {
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
@@ -39,7 +40,10 @@ export default function UserSignup() {
         }
       );
       console.log(response.data);
-      navigate("/user-login");
+      setMessage("Signup Successfully");
+      setTimeout(() => {
+        navigate("/user-login");
+      }, 3000);
     } catch (err) {
       setError(err.response?.data?.message || "Signup Failed");
     }
@@ -53,6 +57,7 @@ export default function UserSignup() {
         <Form onSubmit={handleFormSubmit}>
           <h2 className="text-center mb-4">Sign Up</h2>
           {error && <Alert variant="danger">{error}</Alert>}
+          {message && <Alert variant="success">{message}</Alert>}
           <Form.Group className="mb-3" controlId="username">
             <Form.Label>Username</Form.Label>
             <Form.Control
