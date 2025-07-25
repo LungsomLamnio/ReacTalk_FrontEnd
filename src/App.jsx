@@ -5,6 +5,7 @@ import UserSignup from "./pages/UserSignup";
 import ChatPage from "./pages/ChatPage";
 import UserProfile from "./pages/UserProfile";
 import SearchUsers from "./pages/SearchUsers";
+import UniversalChat from "./pages/UniversalChat";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
       <Route path="/user-signup" element={<UserSignup />} />
       <Route path="/user-profile" element={<UserProfile />} />
       <Route path="/search-users" element={<SearchUsers />} />
+      <Route path="/universal-chat" element={<UniversalChat />} />
       <Route path="/chat" element={<ChatPage />} />
     </Routes>
   );

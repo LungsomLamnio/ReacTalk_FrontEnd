@@ -34,8 +34,8 @@ export default function UserLogin() {
       );
 
       const { token, user } = response.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      sessionStorage.setItem("token", token);
+      sessionStorage.setItem("user", JSON.stringify(user));
 
       console.log("Login Successful: ", response.data);
       setMessage(`Welcome, ${user.username}`);

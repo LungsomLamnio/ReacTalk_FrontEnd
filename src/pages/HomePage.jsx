@@ -14,8 +14,8 @@ export default function HomePage() {
           Start chatting with your friends in real time.
         </p>
         <div className="d-flex justify-content-center mt-4 gap-3">
-          <Button variant="primary" onClick={() => navigate("/user-profile")}>
-            Go to profile
+          <Button variant="primary" onClick={() => navigate("/universal-chat")}>
+            Go to chat
           </Button>
           <Button
             variant="outline-secondary"
