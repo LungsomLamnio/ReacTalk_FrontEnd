@@ -12,7 +12,9 @@ export default function SearchUsers() {
   const [btnMssg, setBtnMssg] = useState("follow");
   const navigate = useNavigate();
 
-  const handleSearch = async () => {
+  const handleSearch = async (event) => {
+    event.preventDefault();
+    console.log("handle search function called");
     setLoading(true);
     setError("");
 
@@ -27,6 +29,7 @@ export default function SearchUsers() {
         `http://localhost:3000/api/users/search/${username}`
       );
       setSearchedUser(response.data.user);
+      console.log(response.data.user);
     } catch (err) {
       setSearchedUser(null);
       setError(err.response?.data?.message || "User not found");

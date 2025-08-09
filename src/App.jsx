@@ -6,6 +6,7 @@ import ChatPage from "./pages/ChatPage";
 import UserProfile from "./pages/UserProfile";
 import SearchUsers from "./pages/SearchUsers";
 import UniversalChat from "./pages/UniversalChat";
+import PrivateChatDashboard from "./pages/PrivateChatDashboard";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
       <Route path="/user-profile" element={<UserProfile />} />
       <Route path="/search-users" element={<SearchUsers />} />
       <Route path="/universal-chat" element={<UniversalChat />} />
+      <Route path="/private-chat" element={<PrivateChatDashboard />} />
       <Route path="/chat" element={<ChatPage />} />
     </Routes>
   );

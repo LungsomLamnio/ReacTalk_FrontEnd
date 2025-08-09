@@ -35,7 +35,6 @@ export default function UniversalChat() {
         const response = await axios.get("http://localhost:3000/api/messages", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log(response.data.messages);
         setMessages(response.data.messages || []);
         setLoading(false);
       } catch (err) {
