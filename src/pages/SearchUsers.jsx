@@ -39,7 +39,7 @@ export default function SearchUsers() {
   };
 
   const handleFollow = async () => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
 
     if (!token) {
       setError("Please login to follow the user");
