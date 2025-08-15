@@ -15,6 +15,9 @@ export default function ChatList() {
         if (!token) {
           setError("Please log in to see your followings");
           setLoading(false);
+          setTimeout(() => {
+            navigate("/user-login");
+          }, 3000);
           return;
         }
 
