@@ -69,7 +69,7 @@ export default function ChatList() {
             <ListGroup.Item
               key={user._id}
               action
-              onClick={() => navigate("/chat-window")}
+              onClick={() => navigate("/chat-window", { state: { user } })}
             >
               {user.username}
             </ListGroup.Item>
