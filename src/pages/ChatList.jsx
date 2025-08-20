@@ -35,14 +35,14 @@ export default function ChatList() {
         setFollowings(data.followings || []);
       } catch (err) {
         console.error(err.message);
-        setError("failed to load followings");
+        setError("Failed to load followings");
       } finally {
         setLoading(false);
       }
     }
 
     fetchFollowings();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return (
@@ -69,7 +69,9 @@ export default function ChatList() {
             <ListGroup.Item
               key={user._id}
               action
-              onClick={() => navigate("/chat-window", { state: { user } })}
+              onClick={() =>
+                navigate("/private-chatwindow", { state: { user } })
+              }
             >
               {user.username}
             </ListGroup.Item>

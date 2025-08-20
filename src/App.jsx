@@ -7,7 +7,7 @@ import UserProfile from "./pages/UserProfile";
 import SearchUsers from "./pages/SearchUsers";
 import UniversalChat from "./pages/UniversalChat";
 import ChatList from "./pages/ChatList";
-import ChatWindow from "./pages/ChatWindow";
+import ChatWindow from "./pages/PrivateChatWindow";
 
 export default function App() {
   return (
@@ -20,7 +20,7 @@ export default function App() {
       <Route path="/universal-chat" element={<UniversalChat />} />
       <Route path="/chat" element={<ChatPage />} />
       <Route path="/chat-list" element={<ChatList />} />
-      <Route path="/chat-window" element={<ChatWindow />} />
+      <Route path="/private-chatwindow" element={<ChatWindow />} />
     </Routes>
   );
 }
