@@ -1,12 +1,3 @@
-import {
-  Container,
-  Card,
-  Alert,
-  Spinner,
-  Row,
-  Col,
-  Image,
-} from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -16,14 +7,16 @@ export default function UserProfile() {
   const [error, setError] = useState("");
   const [profileData, setProfileData] = useState(null);
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       if (!token) {
         setError("You must be logged in");
         setTimeout(() => {
-          return navigate("/user-login");
+          navigate("/user-login");
         }, 3000);
+        return;
       }
 
       try {
@@ -41,61 +34,95 @@ export default function UserProfile() {
         setError(err.response?.data?.message || "Failed to fetch profile.");
 
         if (err.response?.status === 401) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
+          sessionStorage.removeItem("token");
+          sessionStorage.removeItem("user");
           navigate("/user-login");
         }
       }
     };
     fetchProfile();
   }, [navigate]);
+
   return (
-    <Container
-      className="d-flex justify-content-center align-items-center"
-      style={{ height: "100vh" }}
-    >
-      <Card style={{ width: "100%", maxWidth: "500px" }} className="p-4 shadow">
-        <h3 className="text-center mb-4">User Profile</h3>
-        {error && <Alert variant="danger">{error}</Alert>}
+    <div className="min-h-screen bg-white flex flex-col items-center pt-16 px-6 md:px-12 lg:px-24">
+      {error && (
+        <div className="bg-red-100 text-red-700 px-4 py-3 rounded mb-6 text-center font-semibold w-full max-w-3xl">
+          {error}
+        </div>
+      )}
 
-        {!profileData && !alert && (
-          <Spinner animation="border" className="mx-auto d-block" />
-        )}
+      {!profileData && !error && (
+        <div className="flex justify-center items-center h-48 w-full max-w-3xl">
+          <svg
+            className="animate-spin h-12 w-12 text-blue-600"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8z"
+            ></path>
+          </svg>
+        </div>
+      )}
 
-        {profileData && (
-          <Row>
-            {/* Profile Picture */}
-            <Col xs={12} md={4} className="text-center mb-md-0">
-              <Image
-                src={ProfilePicture}
-                alt="profile-picture"
-                roundedCircle
-                style={{ width: "150px", height: "150px", objectFit: "cover" }}
-              />
-            </Col>
-            {/* Profile Info */}
-            <Col xs={12} md={8}>
-              <h4>{profileData.username}</h4>
-              <p>
-                <strong>Email: </strong>
-                {profileData.email}
-              </p>
-              <p>
-                <strong>Bio: </strong>
-                {profileData.bio || "No Bio Yet"}
-              </p>
-              <p>
-                <strong>Followers: </strong>
-                {profileData.followers?.length || 0}
-              </p>
-              <p>
-                <strong>Followings: </strong>
-                {profileData.followings?.length || 0}
-              </p>
-            </Col>
-          </Row>
-        )}
-      </Card>
-    </Container>
+      {profileData && (
+        <div className="flex flex-col md:flex-row md:items-center md:space-x-16 w-full max-w-5xl">
+          {/* Profile Picture */}
+          <div className="flex justify-center md:block mb-10 md:mb-0 flex-shrink-0">
+            <img
+              src={ProfilePicture}
+              alt="Profile"
+              className="rounded-full w-44 h-44 object-cover border-4 border-pink-500 shadow-lg"
+            />
+          </div>
+
+          {/* User Info */}
+          <div className="flex-1">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+              <h1 className="text-4xl font-semibold mb-4 md:mb-0">
+                {profileData.username}
+              </h1>
+              <button className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 font-semibold hover:bg-gray-100 transition">
+                Edit Profile
+              </button>
+            </div>
+
+            <div className="flex justify-around md:justify-start md:space-x-12 text-center md:text-left mb-6">
+              <div>
+                <span className="font-bold text-xl">
+                  {profileData.followers?.length || 0}
+                </span>
+                <p className="text-gray-600">Followers</p>
+              </div>
+              <div>
+                <span className="font-bold text-xl">
+                  {profileData.followings?.length || 0}
+                </span>
+                <p className="text-gray-600">Following</p>
+              </div>
+              <div>
+                <span className="font-bold text-xl">0</span>
+                <p className="text-gray-600">Posts</p>
+              </div>
+            </div>
+
+            <p className="text-gray-700 max-w-3xl mb-4 text-lg">
+              {profileData.bio || "No bio available."}
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
