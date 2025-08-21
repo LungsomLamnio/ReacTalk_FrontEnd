@@ -7,8 +7,10 @@ import ChatPage from "./pages/ChatPage";
 import UserProfile from "./pages/UserProfile";
 import SearchUsers from "./pages/SearchUsers";
 import UniversalChat from "./pages/UniversalChat";
-import ChatList from "./pages/ChatList";
+import Followers from "./pages/Followers";
+import Following from "./pages/Following";
 import ChatWindow from "./pages/PrivateChatWindow";
+import LiveUserSearch from "./pages/LiveUserSearch";
 
 export default function App() {
   return (
@@ -21,11 +23,12 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/user-profile" element={<UserProfile />} />
-        <Route path="/search-users" element={<SearchUsers />} />
         <Route path="/universal-chat" element={<UniversalChat />} />
         <Route path="/chat" element={<ChatPage />} />
-        <Route path="/chat-list" element={<ChatList />} />
+        <Route path="/followers" element={<Followers />} />
+        <Route path="/following" element={<Following />} />
         <Route path="/private-chatwindow" element={<ChatWindow />} />
+        <Route path="/search-users" element={<LiveUserSearch />} />
       </Route>
     </Routes>
   );

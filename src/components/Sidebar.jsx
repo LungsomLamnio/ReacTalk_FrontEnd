@@ -37,7 +37,7 @@ const navItems = [
         />
       </svg>
     ),
-    link: "/chat-list",
+    link: "/search-users",
   },
   {
     name: "Messages",

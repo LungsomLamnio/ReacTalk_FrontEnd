@@ -4,7 +4,6 @@ import io from "socket.io-client";
 import { Spinner, Alert, Button, Form } from "react-bootstrap";
 
 const SOCKET_SERVER_URL = "http://localhost:3000";
-// Ideally, create socket once and share globally
 const socket = io(SOCKET_SERVER_URL);
 
 export default function PrivateChatWindow() {
@@ -13,12 +12,10 @@ export default function PrivateChatWindow() {
 
   const selectedUser = location.state?.user;
 
-  // Get current logged-in user id (_id from MongoDB)
   const storedUser = sessionStorage.getItem("user");
   const currentUser = storedUser ? JSON.parse(storedUser) : null;
   const currentUserId = currentUser?.id || null;
 
-  // Redirect if essential info missing
   useEffect(() => {
     if (!currentUserId) navigate("/user-login");
     if (!selectedUser) navigate("/chat-list");
@@ -30,7 +27,6 @@ export default function PrivateChatWindow() {
   const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
 
-  // Scroll chat to bottom when messages update
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -72,7 +68,6 @@ export default function PrivateChatWindow() {
     fetchMessages();
 
     const receiveHandler = (message) => {
-      // Add only messages relevant to this conversation
       if (
         (message.senderId === selectedUser._id &&
           message.receiverId === currentUserId) ||
@@ -102,7 +97,6 @@ export default function PrivateChatWindow() {
 
     socket.emit("sendMessage", messageData);
 
-    // Don't add message locally; wait for server echo via socket
     setNewMessage("");
   };
 

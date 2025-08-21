@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import ProfilePicture from "../assets/pfp.jpg";
+import ProfilePicture from "../assets/default-pfp.png";
 
 export default function UserProfile() {
   const [error, setError] = useState("");
   const [profileData, setProfileData] = useState(null);
   const navigate = useNavigate();
+
+  // Example click handlers to navigate or open modals for followers/followings
+  const handleViewFollowers = () => {
+    navigate("/followers");
+  };
+
+  const handleViewFollowings = () => {
+    navigate("/following");
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -98,22 +107,31 @@ export default function UserProfile() {
               </button>
             </div>
 
-            <div className="flex justify-around md:justify-start md:space-x-12 text-center md:text-left mb-6">
-              <div>
-                <span className="font-bold text-xl">
-                  {profileData.followers?.length || 0}
+            <div className="flex justify-around md:justify-start md:space-x-12 text-center md:text-left mb-6 space-x-6">
+              <button
+                onClick={handleViewFollowers}
+                className="cursor-pointer font-bold text-xl hover:text-blue-600 transition"
+                type="button"
+                aria-label="View Followers"
+              >
+                {profileData.followers?.length || 0}{" "}
+                <span className="text-gray-600 font-normal ml-1">
+                  Followers
                 </span>
-                <p className="text-gray-600">Followers</p>
-              </div>
-              <div>
-                <span className="font-bold text-xl">
-                  {profileData.followings?.length || 0}
+              </button>
+              <button
+                onClick={handleViewFollowings}
+                className="cursor-pointer font-bold text-xl hover:text-blue-600 transition"
+                type="button"
+                aria-label="View Following"
+              >
+                {profileData.followings?.length || 0}{" "}
+                <span className="text-gray-600 font-normal ml-1">
+                  Following
                 </span>
-                <p className="text-gray-600">Following</p>
-              </div>
-              <div>
-                <span className="font-bold text-xl">0</span>
-                <p className="text-gray-600">Posts</p>
+              </button>
+              <div className="font-bold text-xl">
+                0 <span className="text-gray-600 font-normal ml-1">Posts</span>
               </div>
             </div>
 
