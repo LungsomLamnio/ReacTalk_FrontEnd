@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import DefaultProfilePicture from "../assets/default-pfp.png";
 
 export default function UserProfile() {
   const [error, setError] = useState("");
@@ -14,7 +15,6 @@ export default function UserProfile() {
   });
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-
   const BACKEND_URL = "http://localhost:3000";
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function UserProfile() {
             ? `${BACKEND_URL}${
                 response.data.user.avatar
               }?t=${new Date().getTime()}`
-            : "", // no default image
+            : DefaultProfilePicture,
         });
       } catch (err) {
         setError(err.response?.data?.message || "Failed to fetch profile.");
@@ -52,6 +52,7 @@ export default function UserProfile() {
         }
       }
     };
+
     fetchProfile();
   }, [navigate]);
 
@@ -64,7 +65,7 @@ export default function UserProfile() {
         profilePicture: null,
         profilePicturePreview: profileData.avatar
           ? `${BACKEND_URL}${profileData.avatar}?t=${new Date().getTime()}`
-          : "",
+          : DefaultProfilePicture,
       });
     }
   };
@@ -80,7 +81,7 @@ export default function UserProfile() {
       setFormData((prev) => ({
         ...prev,
         profilePicture: file,
-        profilePicturePreview: URL.createObjectURL(file), // local preview
+        profilePicturePreview: URL.createObjectURL(file),
       }));
     }
   };
@@ -100,17 +101,15 @@ export default function UserProfile() {
         updateData.append("profilePicture", formData.profilePicture);
       }
 
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      };
-
       const res = await axios.post(
         `${BACKEND_URL}/api/users/update-profile`,
         updateData,
-        config
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       setProfileData(res.data.user);
@@ -163,6 +162,7 @@ export default function UserProfile() {
 
       {profileData && (
         <div className="flex flex-col md:flex-row md:items-center md:space-x-16 w-full max-w-5xl">
+          {/* Profile Picture & Edit Button */}
           <div className="flex flex-col items-center md:block mb-10 md:mb-0 flex-shrink-0">
             {formData.profilePicturePreview ? (
               <img
@@ -171,8 +171,9 @@ export default function UserProfile() {
                 className="rounded-full w-44 h-44 object-cover border-4 border-pink-500 shadow-lg"
               />
             ) : (
-              <div className="w-44 h-44 rounded-full border-4 border-pink-500 shadow-lg bg-gray-200" />
+              <div className="w-44 h-44 rounded-full bg-gray-200 border-4 border-pink-500 shadow-lg" />
             )}
+
             {editing && (
               <button
                 onClick={() => fileInputRef.current.click()}
@@ -190,6 +191,7 @@ export default function UserProfile() {
             />
           </div>
 
+          {/* User Info and Edit Form */}
           <div className="flex-1">
             {!editing ? (
               <>
