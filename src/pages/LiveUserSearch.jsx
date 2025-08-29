@@ -5,7 +5,9 @@ export default function LiveUserSearch() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [followingUsers, setFollowingUsers] = useState(new Set());
 
+  // Fetch users when query changes
   useEffect(() => {
     if (!query.trim()) {
       setUsers([]);
@@ -20,10 +22,16 @@ export default function LiveUserSearch() {
         setError(null);
 
         try {
+          const token = sessionStorage.getItem("token");
           const response = await fetch(
             `http://localhost:3000/api/users/search?username=${encodeURIComponent(
               query
-            )}`
+            )}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
           );
 
           if (!response.ok) {
@@ -45,6 +53,37 @@ export default function LiveUserSearch() {
 
     return () => clearTimeout(delayDebounce);
   }, [query]);
+
+  // Handler to follow a user
+  const handleFollow = async (userId) => {
+    try {
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        setError("You must be logged in to follow users.");
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:3000/api/users/follow/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Failed to follow user");
+      }
+
+      // Update local following state for immediate UI feedback
+      setFollowingUsers((prev) => new Set(prev).add(userId));
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex flex-col items-center p-8">
@@ -72,12 +111,12 @@ export default function LiveUserSearch() {
               cy="12"
               r="10"
               stroke="currentColor"
-              strokeWidth="4"
+              strokeWidth={4}
             />
             <path
               className="opacity-75"
               fill="currentColor"
-              d="M4 12a8 8 0 018-8v8z"
+              d="M4 12a8 8 0 018-8v8"
             />
           </svg>
         </div>
@@ -99,14 +138,28 @@ export default function LiveUserSearch() {
         {users.map((user) => (
           <li
             key={user._id}
-            className="px-6 py-4 hover:bg-blue-50 cursor-pointer flex flex-col"
+            className="px-6 py-4 hover:bg-blue-50 cursor-pointer flex justify-between items-center"
           >
-            <span className="font-semibold text-gray-900 text-lg">
-              {user.username}
-            </span>
-            <span className="text-gray-600 text-sm">
-              {user.bio || user.email}
-            </span>
+            <div>
+              <span className="font-semibold text-gray-900 text-lg">
+                {user.username}
+              </span>
+              <div className="text-gray-600 text-sm">
+                {user.bio || user.email}
+              </div>
+            </div>
+            <button
+              onClick={() => handleFollow(user._id)}
+              disabled={followingUsers.has(user._id)}
+              className={`ml-4 px-4 py-2 rounded text-white ${
+                followingUsers.has(user._id)
+                  ? "bg-green-500 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
+              aria-label={`Follow ${user.username}`}
+            >
+              {followingUsers.has(user._id) ? "Following" : "Follow"}
+            </button>
           </li>
         ))}
       </ul>
