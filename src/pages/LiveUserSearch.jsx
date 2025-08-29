@@ -11,7 +11,29 @@ export default function LiveUserSearch() {
 
   const BACKEND_URL = "http://localhost:3000";
 
-  // Close dropdown if clicked outside
+  // Fetch current user's followings on component mount
+  useEffect(() => {
+    async function fetchFollowings() {
+      try {
+        const token = sessionStorage.getItem("token");
+        if (!token) return;
+
+        const res = await fetch(`${BACKEND_URL}/api/users/following`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Failed to load followings");
+
+        const data = await res.json();
+        const followedIds = new Set(data.followings.map((user) => user._id));
+        setFollowingUsers(followedIds);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchFollowings();
+  }, []);
+
+  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -22,6 +44,7 @@ export default function LiveUserSearch() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Search users debounced
   useEffect(() => {
     if (!query.trim()) {
       setUsers([]);
@@ -31,44 +54,41 @@ export default function LiveUserSearch() {
     }
 
     const delayDebounce = setTimeout(() => {
-      const fetchUsers = async () => {
+      async function fetchUsers() {
         setLoading(true);
         setError(null);
-
         try {
           const token = sessionStorage.getItem("token");
+          if (!token) throw new Error("Not authenticated");
+
           const response = await fetch(
             `${BACKEND_URL}/api/users/search?username=${encodeURIComponent(
               query
             )}`,
             {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+              headers: { Authorization: `Bearer ${token}` },
             }
           );
 
-          if (!response.ok) {
-            throw new Error("Failed to fetch users");
-          }
+          if (!response.ok) throw new Error("Failed to fetch");
 
           const data = await response.json();
           setUsers(data.users || []);
+          // Do NOT reset followingUsers here; keep previously fetched followed users
         } catch (err) {
           setError(err.message);
           setUsers([]);
         } finally {
           setLoading(false);
         }
-      };
-
+      }
       fetchUsers();
     }, 400);
 
     return () => clearTimeout(delayDebounce);
   }, [query]);
 
-  // Follow user handler
+  // Follow user
   const handleFollow = async (userId) => {
     try {
       const token = sessionStorage.getItem("token");
@@ -81,15 +101,13 @@ export default function LiveUserSearch() {
         `${BACKEND_URL}/api/users/follow/${userId}`,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || "Failed to follow user");
+        throw new Error(data.message || "Failed to follow");
       }
 
       setFollowingUsers((prev) => new Set(prev).add(userId));
@@ -98,7 +116,7 @@ export default function LiveUserSearch() {
     }
   };
 
-  // Unfollow user handler
+  // Unfollow user
   const handleUnfollow = async (userId) => {
     try {
       const token = sessionStorage.getItem("token");
@@ -111,15 +129,13 @@ export default function LiveUserSearch() {
         `${BACKEND_URL}/api/users/unfollow/${userId}`,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || "Failed to unfollow user");
+        throw new Error(data.message || "Failed to unfollow");
       }
 
       setFollowingUsers((prev) => {
@@ -127,7 +143,7 @@ export default function LiveUserSearch() {
         newSet.delete(userId);
         return newSet;
       });
-      setDropdownOpenUserId(null); // Close dropdown after unfollow
+      setDropdownOpenUserId(null);
     } catch (err) {
       setError(err.message);
     }
@@ -155,9 +171,9 @@ export default function LiveUserSearch() {
           >
             <circle
               className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
+              cx={12}
+              cy={12}
+              r={10}
               stroke="currentColor"
               strokeWidth={4}
             />
@@ -189,10 +205,10 @@ export default function LiveUserSearch() {
           return (
             <li
               key={user._id}
-              className="px-6 py-4 hover:bg-blue-50 cursor-pointer flex justify-between items-center relative"
+              className="px-6 py-4 cursor-pointer flex justify-between items-center relative"
             >
               <div>
-                <span className="font-semibold text-gray-900 text-lg">
+                <span className="font-semibold text-lg text-gray-900">
                   {user.username}
                 </span>
                 <div className="text-gray-600 text-sm">
