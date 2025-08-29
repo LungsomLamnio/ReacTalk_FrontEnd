@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function LiveUserSearch() {
   const [query, setQuery] = useState("");
@@ -6,8 +6,22 @@ export default function LiveUserSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [followingUsers, setFollowingUsers] = useState(new Set());
+  const [dropdownOpenUserId, setDropdownOpenUserId] = useState(null);
+  const dropdownRef = useRef(null);
 
-  // Fetch users when query changes
+  const BACKEND_URL = "http://localhost:3000";
+
+  // Close dropdown if clicked outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpenUserId(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   useEffect(() => {
     if (!query.trim()) {
       setUsers([]);
@@ -24,7 +38,7 @@ export default function LiveUserSearch() {
         try {
           const token = sessionStorage.getItem("token");
           const response = await fetch(
-            `http://localhost:3000/api/users/search?username=${encodeURIComponent(
+            `${BACKEND_URL}/api/users/search?username=${encodeURIComponent(
               query
             )}`,
             {
@@ -54,7 +68,7 @@ export default function LiveUserSearch() {
     return () => clearTimeout(delayDebounce);
   }, [query]);
 
-  // Handler to follow a user
+  // Follow user handler
   const handleFollow = async (userId) => {
     try {
       const token = sessionStorage.getItem("token");
@@ -64,7 +78,7 @@ export default function LiveUserSearch() {
       }
 
       const response = await fetch(
-        `http://localhost:3000/api/users/follow/${userId}`,
+        `${BACKEND_URL}/api/users/follow/${userId}`,
         {
           method: "POST",
           headers: {
@@ -78,8 +92,42 @@ export default function LiveUserSearch() {
         throw new Error(data.message || "Failed to follow user");
       }
 
-      // Update local following state for immediate UI feedback
       setFollowingUsers((prev) => new Set(prev).add(userId));
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  // Unfollow user handler
+  const handleUnfollow = async (userId) => {
+    try {
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        setError("You must be logged in to unfollow users.");
+        return;
+      }
+
+      const response = await fetch(
+        `${BACKEND_URL}/api/users/unfollow/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Failed to unfollow user");
+      }
+
+      setFollowingUsers((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(userId);
+        return newSet;
+      });
+      setDropdownOpenUserId(null); // Close dropdown after unfollow
     } catch (err) {
       setError(err.message);
     }
@@ -135,33 +183,62 @@ export default function LiveUserSearch() {
       )}
 
       <ul className="w-full max-w-lg bg-white rounded-lg shadow divide-y divide-gray-200 mt-6">
-        {users.map((user) => (
-          <li
-            key={user._id}
-            className="px-6 py-4 hover:bg-blue-50 cursor-pointer flex justify-between items-center"
-          >
-            <div>
-              <span className="font-semibold text-gray-900 text-lg">
-                {user.username}
-              </span>
-              <div className="text-gray-600 text-sm">
-                {user.bio || user.email}
-              </div>
-            </div>
-            <button
-              onClick={() => handleFollow(user._id)}
-              disabled={followingUsers.has(user._id)}
-              className={`ml-4 px-4 py-2 rounded text-white ${
-                followingUsers.has(user._id)
-                  ? "bg-green-500 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              }`}
-              aria-label={`Follow ${user.username}`}
+        {users.map((user) => {
+          const isFollowing = followingUsers.has(user._id);
+
+          return (
+            <li
+              key={user._id}
+              className="px-6 py-4 hover:bg-blue-50 cursor-pointer flex justify-between items-center relative"
             >
-              {followingUsers.has(user._id) ? "Following" : "Follow"}
-            </button>
-          </li>
-        ))}
+              <div>
+                <span className="font-semibold text-gray-900 text-lg">
+                  {user.username}
+                </span>
+                <div className="text-gray-600 text-sm">
+                  {user.bio || user.email}
+                </div>
+              </div>
+
+              {!isFollowing ? (
+                <button
+                  onClick={() => handleFollow(user._id)}
+                  className="ml-4 px-4 py-2 rounded text-white bg-blue-600 hover:bg-blue-700"
+                  aria-label={`Follow ${user.username}`}
+                >
+                  Follow
+                </button>
+              ) : (
+                <div className="ml-4 relative" ref={dropdownRef}>
+                  <button
+                    onClick={() =>
+                      setDropdownOpenUserId(
+                        dropdownOpenUserId === user._id ? null : user._id
+                      )
+                    }
+                    className="px-4 py-2 rounded text-white bg-green-600 hover:bg-green-700 focus:outline-none"
+                    aria-haspopup="true"
+                    aria-expanded={dropdownOpenUserId === user._id}
+                    aria-label={`${user.username} is following - options`}
+                  >
+                    Following ▼
+                  </button>
+
+                  {dropdownOpenUserId === user._id && (
+                    <div className="absolute right-0 mt-2 w-24 bg-white border rounded shadow-lg z-10">
+                      <button
+                        onClick={() => handleUnfollow(user._id)}
+                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-100"
+                      >
+                        Unfollow
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
