@@ -31,7 +31,7 @@ export default function LiveUserSearch() {
           }
 
           const data = await response.json();
-          setUsers(data.user || []);
+          setUsers(data.users || []);
         } catch (err) {
           setError(err.message);
           setUsers([]);
