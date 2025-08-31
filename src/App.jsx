@@ -11,6 +11,7 @@ import Followers from "./pages/Followers";
 import Following from "./pages/Following";
 import ChatWindow from "./pages/PrivateChatWindow";
 import LiveUserSearch from "./pages/LiveUserSearch";
+import ViewUserProfile from "./pages/ViewUserProfile";
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/following" element={<Following />} />
         <Route path="/private-chatwindow" element={<ChatWindow />} />
         <Route path="/search-users" element={<LiveUserSearch />} />
+        <Route path="/user/:id" element={<ViewUserProfile />} />
       </Route>
     </Routes>
   );

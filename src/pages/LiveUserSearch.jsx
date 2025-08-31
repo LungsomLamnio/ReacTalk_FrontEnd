@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function LiveUserSearch() {
   const [query, setQuery] = useState("");
@@ -10,6 +11,7 @@ export default function LiveUserSearch() {
   const dropdownRef = useRef(null);
 
   const BACKEND_URL = "http://localhost:3000";
+  const navigate = useNavigate();
 
   // Fetch current user's followings on component mount
   useEffect(() => {
@@ -207,7 +209,15 @@ export default function LiveUserSearch() {
               key={user._id}
               className="px-6 py-4 cursor-pointer flex justify-between items-center relative"
             >
-              <div>
+              {/* CLICKABLE USER AREA */}
+              <div
+                onClick={() => navigate(`/user/${user._id}`)}
+                className="flex-1"
+                style={{ cursor: "pointer" }}
+                tabIndex={0}
+                role="button"
+                aria-label={`View ${user.username}'s profile`}
+              >
                 <span className="font-semibold text-lg text-gray-900">
                   {user.username}
                 </span>
